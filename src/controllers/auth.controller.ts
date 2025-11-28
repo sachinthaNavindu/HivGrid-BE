@@ -11,7 +11,11 @@ const JWT_ACCESS_SECRET = process.env.JWT_SECRET as string
 
 export const registerUser = async (req: Request, res: Response) => {
     try{
-        const { email, password } = req.body
+        const { email, password, username } = req.body
+
+        if(!email || !password || !username){
+            return res.status(401).json({message:"Missing required fields. Ensure email, username, and password are included."})
+        }
 
         const existingUser = await User.findOne({email})
 
@@ -23,12 +27,15 @@ export const registerUser = async (req: Request, res: Response) => {
 
         const user = await User.create({
             email,
+            username,
             password:hash
         })
 
         res.status(201).json({
             message :"Usern Registered Succefully",
-            data: { email:user.email}
+            data: { email:user.email,
+                    username:user.username
+            }
         })
     }catch(err){
         res.status(500).json({

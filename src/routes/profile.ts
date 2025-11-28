@@ -9,3 +9,5 @@ import { authenticate } from "../middleware/auth";
  profileRouter.post("/deleteAccount",authenticate,deleteAccount)
  
  export default profileRouter
+
+ 
