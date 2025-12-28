@@ -20,10 +20,12 @@ export const loadData = async (req: Request, res: Response) => {
     const skip = (page - 1) * limit
 
     const posts = await Post.find()
-      .populate("user","email")
+      .populate("user", "email username imageUrl")
       .sort({createdAt: -1})
       .skip(skip)
       .limit(limit)
+
+      console.log(posts)
 
     const total = await Post.countDocuments();
 
@@ -52,6 +54,7 @@ export const loadUserData = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({message:"User not found"})
     }
 
+    
     res.status(200).json({
       message:"User data loaded successfully",
       user
