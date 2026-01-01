@@ -4,12 +4,10 @@ import { Post } from "../models/post.model";
 
 export const updatePost = async (req: AuthRequest, res: Response) => {
   try {
-    console.log("updatePost is working");
 
     const userId = req.user.sub;
     const { postId, title, caption, tags } = req.body;
 
-    console.log({ postId, title, caption, tags });
 
     if (!postId) {
       return res.status(400).json({ message: "Post ID is required" });

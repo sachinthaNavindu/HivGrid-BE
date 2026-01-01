@@ -5,8 +5,8 @@ import dotenv from "dotenv"
 import authRouter from "./routes/auth"
 import homeRouter from "./routes/home"
 import profileRouter from "./routes/profile"
-import imageRouter from "./routes/imageGenerate"
 import postRouter from "./routes/post"
+import hireAdRouter from "./routes/hireAd"
 
 dotenv.config()
 
@@ -28,8 +28,8 @@ app.use(express.json())
 app.use("/api/HivGrid/auth", authRouter)
 app.use("/api/HivGrid/home", homeRouter)
 app.use("/api/HivGrid/profile", profileRouter)
-app.use("/api/HivGrid/images",imageRouter)
 app.use("/api/HivGrid/post",postRouter)
+app.use("/api/HivGrid/hire",hireAdRouter)
 
 mongoose
   .connect(MONGO_URI)

@@ -11,7 +11,7 @@ dotenv.config();
 
 const JWT_SECRET  = process.env.JWT_SECRET as string;
 
-
+//2.5
 export const verify = async (req: Request, res: Response) => {
   const {email} = req.body
   
@@ -30,7 +30,6 @@ export const verify = async (req: Request, res: Response) => {
 
     return res.status(200).json({message:"Email sent succefully"})
   } catch (error) {
-    console.log(error)
     return res.status(400).json({
       message: "Failed to send verification email. The email may be invalid.",
     })
@@ -40,7 +39,6 @@ export const verify = async (req: Request, res: Response) => {
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const { email, username, password,code } = req.body
-    console.log(email,username,password,code)
 
     if (!email || !username || !password || !code) {
       return res
@@ -79,7 +77,6 @@ export const loginUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    console.log(req.body)
 
     const existingUser = (await User.findOne({ email })) as IUSER | null;
 

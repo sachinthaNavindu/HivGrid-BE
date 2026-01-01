@@ -25,7 +25,6 @@ export const loadData = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limit)
 
-      console.log(posts)
 
     const total = await Post.countDocuments();
 
