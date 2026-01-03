@@ -157,11 +157,11 @@ export const refreshToken = async (req: Request, res: Response) => {
     }
 
     const accessToken = signAccessToken(user);
-    const refereshToken = signRefreshToken(user);
+    const refreshToken2 = signRefreshToken(user);
 
     res.status(200).json({
       accessToken,
-      refreshToken
+      refreshToken:refreshToken2
     });
   } catch (err) {
     res.status(403).json({ message: "Invaid or Expired Token" })

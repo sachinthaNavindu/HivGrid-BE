@@ -45,6 +45,7 @@ const HiringAdSchema = new Schema<IHiringAd>(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      unique:true
     },
   },
   {
