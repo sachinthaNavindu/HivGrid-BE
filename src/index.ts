@@ -14,19 +14,17 @@ const PORT = process.env.PORT
 const MONGO_URI = process.env.MONGO_URI as string
 
 const app = express()
+app.use(express.json())
 
 app.use(
   cors({
     origin: ["https://hiv-grid-fe.vercel.app"],
-    methods: ["GET", "POST", "PUT", "DELETE","OPTIONS"],
-    credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"]
+    methods: ["GET", "POST", "PUT", "DELETE","OPTIONS"]
   })
 );
 
 app.options("*", cors());
 
-app.use(express.json())
 
 app.use("/api/HivGrid/auth", authRouter)
 app.use("/api/HivGrid/home", homeRouter)
