@@ -20,12 +20,18 @@ app.use(
     origin: ["https://hiv-grid-fe.vercel.app"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE","OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
+    allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Content-Length", "Authorization"]
   })
 );
 
-// app.options(/.*/, cors());
 
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  console.log('Origin:', req.headers.origin);
+  console.log('Headers:', req.headers);
+  next();
+});
 
 app.use("/api/HivGrid/auth", authRouter)
 app.use("/api/HivGrid/home", homeRouter)
@@ -40,8 +46,6 @@ mongoose
     console.error(err)
     process.exit(1)
   })
-
-
 
 
 export default app
