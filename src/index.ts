@@ -20,8 +20,11 @@ app.use(
     origin: ["https://hiv-grid-fe.vercel.app"],
     methods: ["GET", "POST", "PUT", "DELETE","OPTIONS"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"]
   })
 );
+
+app.options("*", cors());
 
 app.use(express.json())
 
@@ -39,6 +42,4 @@ mongoose
     process.exit(1)
   })
 
-app.listen(PORT, () => {
-  console.log("Server is running", PORT)
-})
+  export default app
