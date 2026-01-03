@@ -17,7 +17,7 @@ app.use(express.json())
 
 app.use(
   cors({
-    origin: ["https://hiv-grid-fe.vercel.app"],
+    origin: ["https://hiv-grid-fe.vercel.app/"],
     methods: ["GET", "POST", "PUT", "DELETE","OPTIONS"]
   })
 );
