@@ -26,8 +26,8 @@ export const authenticate = (
         req.user = payload
         next()
     }catch(err){
-        res.status(403).json({
-            message: "Invalid"
+        res.status(401).json({
+            message: "Access token expired"
         })
     }
 }

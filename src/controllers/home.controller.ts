@@ -1,30 +1,28 @@
-import { Request, Response } from "express"
-import { IPost, Post } from "../models/post.model"
-import { AuthRequest } from "../middleware/auth"
-import { v2 as cloudinary } from "cloudinary"
-import dotenv from "dotenv"
-import { User } from "../models/user.models"
-dotenv.config()
+import { Request, Response } from "express";
+import { IPost, Post } from "../models/post.model";
+import { AuthRequest } from "../middleware/auth";
+import { v2 as cloudinary } from "cloudinary";
+import dotenv from "dotenv";
+import { User } from "../models/user.models";
+dotenv.config();
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUD_API_KEY,
   api_secret: process.env.CLOUD_API_SECRET,
-})
+});
 
 export const loadData = async (req: Request, res: Response) => {
   try {
-
-    const page = parseInt(req.query.page as string) || 1
-    const limit = parseInt(req.query.limit as string) || 10
-    const skip = (page - 1) * limit
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
 
     const posts = await Post.find()
       .populate("user", "email username imageUrl")
-      .sort({createdAt: -1})
+      .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit)
-
+      .limit(limit);
 
     const total = await Post.countDocuments();
 
@@ -36,66 +34,82 @@ export const loadData = async (req: Request, res: Response) => {
       totalPosts: total,
       data: posts,
     });
-
   } catch (err) {}
-}
+};
 
 export const loadUserData = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.sub
-    
-    if(!userId){
-      return res.status(400).json({message:"Invalid token"})
-    }
-    const user = await User.findById(userId).select("-password")
+    const userId = req.user?.sub;
 
-    if(!user){
-      return res.status(400).json({message:"User not found"})
+    if (!userId) {
+      return res.status(400).json({ message: "Invalid token" });
+    }
+    const user = await User.findById(userId).select("-password");
+
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
     }
 
-    
     res.status(200).json({
-      message:"User data loaded successfully",
-      user
-    })
+      message: "User data loaded successfully",
+      user,
+    });
   } catch (err) {
-    res.status(500).json({message:"Internal server error"})
+    res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
 export const publishPost = async (req: AuthRequest, res: Response) => {
   try {
-    const {title,caption,tags} = req.body;
+    const { title, caption, tags } = req.body;
     const user = req.user.sub;
     const image = req.file?.buffer;
 
     if (!title || !caption || !tags || !image) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Required fields are missing. Ensure all fields are filled before submitting..!",
-        })
+      return res.status(400).json({
+        message:
+          "Required fields are missing. Ensure all fields are filled before submitting..!",
+      });
+    }
+
+    let normalizedTags: string[] = [];
+
+    if (typeof tags === "string") {
+      try {
+        const parsed = JSON.parse(tags);
+
+        if (Array.isArray(parsed)) {
+          normalizedTags = parsed.map((tag: string) => tag.trim());
+        } else {
+          normalizedTags = tags.split(",").map((tag) => tag.trim());
+        }
+      } catch {
+        normalizedTags = tags.split(",").map((tag) => tag.trim());
+      }
+    } else if (Array.isArray(tags)) {
+      normalizedTags = tags.map((tag: string) => tag.trim());
     }
 
     await cloudinary.uploader
       .upload_stream({ resource_type: "image" }, async (error, result) => {
         if (error) {
-          return res.status(500).json({ message: "Image upload failed",error })
+          return res
+            .status(500)
+            .json({ message: "Image upload failed", error });
         }
         const post = await Post.create({
           user,
           title,
           caption,
-          tags: tags ? tags.split(",").map((tag: string) => tag.trim()) : [],
+          tags: normalizedTags,
           imageUrl: result?.secure_url,
-        } as IPost)
+        } as IPost);
         return res
           .status(201)
-          .json({ message: "Post published successfully..!",data:post });
+          .json({ message: "Post published successfully..!", data: post });
       })
-      .end(image)
+      .end(image);
   } catch (err) {
-    res.status(500).json({ message: "Internal server error" })
+    res.status(500).json({ message: "Internal server error" });
   }
-}
+};

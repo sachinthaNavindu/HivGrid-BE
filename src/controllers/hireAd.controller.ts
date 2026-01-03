@@ -1,11 +1,11 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 import { HiringAd } from "../models/hireAd.model";
 import { AuthRequest } from "../middleware/auth";
+import axios from "axios";
 
 export const publishHiringAd = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user.sub 
-
+    const userId = req.user.sub;
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -20,8 +20,6 @@ export const publishHiringAd = async (req: AuthRequest, res: Response) => {
       phoneNumber,
     } = req.body;
 
-
-
     if (!description || !countryCode) {
       return res.status(400).json({
         message: "Description and country code are required",
@@ -34,12 +32,11 @@ export const publishHiringAd = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    const whatsApp =
-      phoneNumber ? `${countryCode}${phoneNumber}` : undefined;
+    const whatsApp = phoneNumber ? `${countryCode}${phoneNumber}` : undefined;
 
     const hiringAd = await HiringAd.create({
-      username:name,
-      email:userEmail,
+      username: name,
+      email: userEmail,
       description,
       selectedSkills,
       whatsApp,
@@ -50,9 +47,11 @@ export const publishHiringAd = async (req: AuthRequest, res: Response) => {
       message: "Hiring ad published successfully",
       hiringAd,
     });
-  } catch (error:any) {
-    if(error.code === 11000){
-      return res.status(409).json({message:"You already have a published hiring ad"})
+  } catch (error: any) {
+    if (error.code === 11000) {
+      return res
+        .status(409)
+        .json({ message: "You already have a published hiring ad" });
     }
     return res.status(500).json({
       message: "Failed to publish hiring ad",
@@ -60,12 +59,11 @@ export const publishHiringAd = async (req: AuthRequest, res: Response) => {
   }
 };
 
-
 export const getAll = async (req: Request, res: Response) => {
   try {
     const hiringAds = await HiringAd.find()
-      .sort({ createdAt: -1 }) 
-      .populate("user", "username email imageUrl") 
+      .sort({ createdAt: -1 })
+      .populate("user", "username email imageUrl")
       .lean();
 
     return res.status(200).json({
@@ -79,9 +77,9 @@ export const getAll = async (req: Request, res: Response) => {
   }
 };
 
-export const getMyHiringAd = async(req:AuthRequest, res:Response)=> {
-  try{
-    const userId = req.user.sub
+export const getMyHiringAd = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user.sub;
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -98,14 +96,14 @@ export const getMyHiringAd = async(req:AuthRequest, res:Response)=> {
     }
 
     return res.status(200).json({
-      data: myHiringAd
-    })
-  }catch(error){
+      data: myHiringAd,
+    });
+  } catch (error) {
     return res.status(500).json({
-      message:"Internal server error"
-    })
+      message: "Internal server error",
+    });
   }
-}
+};
 
 export const updateHireAd = async (req: AuthRequest, res: Response) => {
   try {
@@ -136,11 +134,10 @@ export const updateHireAd = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    const whatsApp =
-      phoneNumber ? `${countryCode}${phoneNumber}` : undefined;
+    const whatsApp = phoneNumber ? `${countryCode}${phoneNumber}` : undefined;
 
     const updatedAd = await HiringAd.findOneAndUpdate(
-      { user: userId }, 
+      { user: userId },
       {
         username: name,
         email: userEmail,
@@ -149,7 +146,7 @@ export const updateHireAd = async (req: AuthRequest, res: Response) => {
         whatsApp,
       },
       {
-        new: true,       
+        new: true,
         runValidators: true,
       }
     )
@@ -170,5 +167,62 @@ export const updateHireAd = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({
       message: "Failed to update hiring ad",
     });
+  }
+};
+
+export const enhanceDescription = async (req: Request, res: Response) => {
+  try {
+    const { data } = req.body;
+
+    const prompt = `
+                    Rewrite the following text as a professional, clear, and engaging "for-hire" advertisement.
+
+                    The text should be written in the FIRST PERSON (e.g., "I am", "I offer", "I can help").
+                    It should sound like a skilled professional promoting their services, not a company hiring. use only 150 words and add some emojies and make it atrractive
+
+                    Do NOT add explanations, headings, or commentary.
+                    Return ONLY the enhanced description text.
+
+                    Original description:
+                    ${data}
+                    `
+
+    const maxToken = 1000
+
+    const aiResponse = await axios.post(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+      {
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          maxOutputTokens: maxToken,
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-goog-api-key": "AIzaSyBl4tobnAdxLPOxen85FJbVBNMJYkVZE9M",
+        },
+      }
+    );
+
+    const genratedContent =
+      aiResponse.data?.candidates?.[0]?.content?.[0]?.text ||
+      aiResponse.data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "No data";
+
+    console.log(genratedContent);
+
+    return res.status(200).json({ enhancedDescription: genratedContent });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

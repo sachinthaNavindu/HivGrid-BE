@@ -9,7 +9,6 @@ import verificationCodes from "../store/verificationCodes";
 
 dotenv.config();
 
-const JWT_SECRET  = process.env.JWT_SECRET as string;
 
 //2.5
 export const verify = async (req: Request, res: Response) => {
@@ -138,6 +137,8 @@ export const forgetPassword = async (req: Request, res: Response) => {
 
 export const refreshToken = async (req: Request, res: Response) => {
   try {
+    console.log("working token")
+
     const { refreshToken  } = req.body;
 
     if (!refreshToken ) {
@@ -146,7 +147,7 @@ export const refreshToken = async (req: Request, res: Response) => {
       });
     }
 
-    const payload = jwt.verify(refreshToken , JWT_SECRET )
+    const payload = jwt.verify(refreshToken , process.env.REFRESH_SECRET as string ) as jwt.JwtPayload
 
     const user = await User.findById(payload.sub);
 
@@ -164,6 +165,7 @@ export const refreshToken = async (req: Request, res: Response) => {
       refreshToken:refreshToken2
     });
   } catch (err) {
-    res.status(403).json({ message: "Invaid or Expired Token" })
+    res.status(401).json({ message: "Refresh token expired"})
   }
 };
+
