@@ -17,7 +17,7 @@ const app = express()
 
 app.use(
   cors({
-    origin: ["http://localhost:8080", "http://localhost:5173"],
+    origin: ["http://localhost:8080", "http://localhost:5173","https://hiv-grid-fe.vercel.app/"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
