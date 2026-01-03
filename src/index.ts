@@ -10,7 +10,6 @@ import hireAdRouter from "./routes/hireAd"
 
 dotenv.config()
 
-const PORT = process.env.PORT
 const MONGO_URI = process.env.MONGO_URI as string
 
 const app = express()
@@ -40,4 +39,6 @@ mongoose
     process.exit(1)
   })
 
-  export default app
+
+
+
