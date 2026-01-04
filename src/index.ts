@@ -23,6 +23,9 @@ app.use(
   })
 )
 
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" })
+})
 
 
 app.use("/api/HivGrid/auth", authRouter)
@@ -31,13 +34,29 @@ app.use("/api/HivGrid/profile", profileRouter)
 app.use("/api/HivGrid/post",postRouter)
 app.use("/api/HivGrid/hire",hireAdRouter)
 
-mongoose
-  .connect(MONGO_URI)
-  .then(() => console.log("DB connected"))
-  .catch((err) => {
-    console.error(err)
-    process.exit(1)
-  })
+let isConnected = false
+
+async function connectDB() {
+  if (isConnected) return
+
+  if (!process.env.MONGO_URI) {
+    throw new Error("MONGO_URI is missing")
+  }
+
+  await mongoose.connect(process.env.MONGO_URI)
+  isConnected = true
+  console.log("MongoDB connected")
+}
+
+app.use(async (req, res, next) => {
+  try {
+    await connectDB()
+    next()
+  } catch (err) {
+    console.error("DB connection failed:", err)
+    res.status(500).json({ message: "Database connection failed" })
+  }
+})
 
 
 export default app
