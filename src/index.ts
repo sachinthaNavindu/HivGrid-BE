@@ -23,17 +23,6 @@ app.use(
   })
 )
 
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok" })
-})
-
-
-app.use("/api/HivGrid/auth", authRouter)
-app.use("/api/HivGrid/home", homeRouter)
-app.use("/api/HivGrid/profile", profileRouter)
-app.use("/api/HivGrid/post",postRouter)
-app.use("/api/HivGrid/hire",hireAdRouter)
-
 let isConnected = false
 
 async function connectDB() {
@@ -57,6 +46,20 @@ app.use(async (req, res, next) => {
     res.status(500).json({ message: "Database connection failed" })
   }
 })
+
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" })
+})
+
+
+app.use("/api/HivGrid/auth", authRouter)
+app.use("/api/HivGrid/home", homeRouter)
+app.use("/api/HivGrid/profile", profileRouter)
+app.use("/api/HivGrid/post",postRouter)
+app.use("/api/HivGrid/hire",hireAdRouter)
+
+
 
 
 export default app
