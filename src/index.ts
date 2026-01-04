@@ -14,11 +14,11 @@ dotenv.config()
 const app = express()
 
 app.use(express.json())
-//https://hiv-grid-fe.vercel.app
 app.use(
   cors({
-    origin: "http://localhost:8080",
-    methods: ["GET", "POST", "PUT", "DELETE"]
+    origin: "https://hiv-grid-fe.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
   })
 )
 
