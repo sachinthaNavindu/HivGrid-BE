@@ -77,7 +77,9 @@ export const loginUser = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
 
-    const existingUser = (await User.findOne({ email })) as IUSER | null;
+  const existingUser = await User
+    .findOne({ email })
+    .select("+password") as IUSER | null;
 
     if (!existingUser) {
       return res.status(401).json({ message: "Invalid Credentials" });
