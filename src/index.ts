@@ -14,12 +14,11 @@ dotenv.config()
 const app = express()
 
 app.use(express.json())
-
+//https://hiv-grid-fe.vercel.app
 app.use(
   cors({
-    origin: "https://hiv-grid-fe.vercel.app",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
+    origin: "http://localhost:8080",
+    methods: ["GET", "POST", "PUT", "DELETE"]
   })
 )
 
@@ -47,5 +46,10 @@ app.use("/api/HivGrid/home", homeRouter)
 app.use("/api/HivGrid/profile", profileRouter)
 app.use("/api/HivGrid/post", postRouter)
 app.use("/api/HivGrid/hire", hireAdRouter)
+
+app.listen(8081, () => {
+  console.log("Server running on port 8081");
+});
+
 
 export default app
