@@ -11,6 +11,7 @@ import hireAdRouter from "./routes/hireAd"
 
 dotenv.config()
 
+const MONGO_URI = process.env.MONGO_URI as string
 const app = express()
 
 app.use(express.json())
@@ -22,20 +23,7 @@ app.use(
   })
 )
 
-async function connectDB() {
-  if (mongoose.connection.readyState === 1) return
 
-  if (!process.env.MONGO_URI) {
-    throw new Error("MONGO_URI is missing")
-  }
-
-  await mongoose.connect(process.env.MONGO_URI)
-  console.log("MongoDB connected")
-}
-
-connectDB().catch(err => {
-  console.error("MongoDB initial connection failed:", err)
-})
 
 app.get("/api/health", (_, res) => {
   res.json({ status: "ok" })
@@ -46,6 +34,17 @@ app.use("/api/HivGrid/home", homeRouter)
 app.use("/api/HivGrid/profile", profileRouter)
 app.use("/api/HivGrid/post", postRouter)
 app.use("/api/HivGrid/hire", hireAdRouter)
+
+
+mongoose
+    .connect(MONGO_URI)
+    .then(() => {
+        console.log("DB is Connected")
+    })
+    .catch((err) => {
+        console.log("DB isn't connected :", err)
+        process.exit(1)
+    })
 
 app.listen(8081, () => {
   console.log("Server running on port 8081");
