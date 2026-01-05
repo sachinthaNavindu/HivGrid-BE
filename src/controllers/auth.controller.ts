@@ -12,7 +12,17 @@ dotenv.config();
 
 //2.5
 export const verify = async (req: Request, res: Response) => {
+
   const {email} = req.body
+
+  const existingUser = (await User.findOne({ email })) as IUSER | null;
+
+    if (!existingUser) {
+      return res
+        .status(401)
+        .json({ message: "User not found for the provided email" });
+    }
+  
   
     const code = Math.floor(
     100000 + Math.random() * 900000
@@ -111,7 +121,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const forgetPassword = async (req: Request, res: Response) => {
   try {
-    const { email, newPassword } = req.body;
+    const { email, newPassword,code } = req.body;
 
     const existingUser = (await User.findOne({ email })) as IUSER | null;
 
@@ -121,6 +131,9 @@ export const forgetPassword = async (req: Request, res: Response) => {
         .json({ message: "User not found for the provided email" });
     }
 
+    if (verificationCodes[email] !== code) {
+      return res.status(400).json({ message: "Invalid or expired verification code" })
+    }
     const hash = await bcrypt.hash(newPassword, 10);
 
     existingUser.password = hash;

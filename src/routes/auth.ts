@@ -10,7 +10,7 @@ authRouter.post("/register",registerValidation,validate,registerUser)
 
 authRouter.post("/login",loginUser)
 
-authRouter.post("/forgottPassword",forgetPassword)
+authRouter.post("/resetPassword",forgetPassword)
 
 authRouter.post("/refreshToken",refreshToken)
 

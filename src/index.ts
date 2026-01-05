@@ -12,12 +12,14 @@ import hireAdRouter from "./routes/hireAd"
 dotenv.config()
 
 const MONGO_URI = process.env.MONGO_URI as string
+const PORT = process.env.PORT
 const app = express()
 
 app.use(express.json())
 app.use(
   cors({
-    origin: "https://hiv-grid-fe.vercel.app",
+    // origin: "https://hiv-grid-fe.vercel.app",
+    origin:"http://localhost:8080",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
   })
@@ -46,9 +48,9 @@ mongoose
         process.exit(1)
     })
 
-app.listen(8081, () => {
-  console.log("Server running on port 8081");
-});
+app.listen(PORT, () => {
+    console.log("Server is connected  ",PORT)
+})
 
 
 export default app
