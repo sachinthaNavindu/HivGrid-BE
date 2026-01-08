@@ -20,17 +20,12 @@ export const hiringAdValidation = [
       return true;
     }),
 
-  body("email")
+  body("userEmail")
     .isEmail()
     .withMessage("Invalid email address"),
 
-  body("username")
+  body("name")
     .trim()
     .isLength({ min: 3 })
     .withMessage("Username must be at least 3 characters"),
-
-  body("whatsApp")
-    .optional()
-    .matches(/^\+?[1-9]\d{7,14}$/)
-    .withMessage("Invalid WhatsApp number"),
 ];

@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response,Request } from "express";
 import { AuthRequest } from "../middleware/auth";
 import { Post } from "../models/post.model";
 
@@ -43,4 +43,27 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
     console.error(err);
     return res.status(500).json({ message: "Internal Server Error" });
   }
-};
+}
+
+export const deletePost = async(res:Response,req:Request)=>{
+  try{
+        const { postId } = req.params;
+    
+        if (!postId) {
+          return res.status(400).json({ message: "Post ID is required" });
+        }
+    
+        const deletedAd = await Post.findByIdAndDelete(postId);
+    
+        if (!deletedAd) {
+          return res.status(404).json({ message: "Post not found" });
+        }
+    
+        return res.status(200).json({
+          message: "Post deleted successfully",
+          deletedAd,
+        });
+  }catch(error){
+    res.status(500).json({message:"internal Server error"})
+  }
+}

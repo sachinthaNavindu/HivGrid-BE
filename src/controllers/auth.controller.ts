@@ -10,10 +10,11 @@ import verificationCodes from "../store/verificationCodes";
 dotenv.config();
 
 
-//2.5
 export const verify = async (req: Request, res: Response) => {
 
   const {email} = req.body
+
+  console.log(email)
 
   const existingUser = (await User.findOne({ email })) as IUSER | null;
 
@@ -45,6 +46,41 @@ export const verify = async (req: Request, res: Response) => {
   }
 }
 
+export const Registerverify = async (req: Request, res: Response) => {
+
+  const {email} = req.body
+
+  console.log(email)
+
+  const existingUser = (await User.findOne({ email })) as IUSER | null;
+
+    if (existingUser) {
+      return res
+        .status(401)
+        .json({ message: "User already exists for the provided email" });
+    }
+  
+  
+    const code = Math.floor(
+    100000 + Math.random() * 900000
+  ).toString();
+
+  verificationCodes[email] = code;
+  try {
+    await sendEmail(
+      email,
+      "Verify Your Account",
+      `<p>Your verification code is:</p>
+         <h2>${code}</h2>`
+    );
+
+    return res.status(200).json({message:"Email sent succefully"})
+  } catch (error) {
+    return res.status(400).json({
+      message: "Failed to send verification email. The email may be invalid.",
+    })
+  }
+}
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const { email, username, password,code } = req.body
@@ -103,6 +139,9 @@ export const loginUser = async (req: Request, res: Response) => {
 
     const accessToken = signAccessToken(existingUser);
     const refreshToken = signRefreshToken(existingUser);
+    const loggedinUserRole = existingUser.roles
+
+    console.log(loggedinUserRole)
 
     res.status(200).json({
       message: "Login successful",
@@ -110,6 +149,7 @@ export const loginUser = async (req: Request, res: Response) => {
         email: existingUser.email,
         accessToken,
         refreshToken,
+        loggedinUserRole
       },
     });
   } catch (err) {

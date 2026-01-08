@@ -50,6 +50,7 @@ export const loadUserData = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: "User not found" });
     }
 
+
     res.status(200).json({
       message: "User data loaded successfully",
       user,

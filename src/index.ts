@@ -8,6 +8,7 @@ import homeRouter from "./routes/home"
 import profileRouter from "./routes/profile"
 import postRouter from "./routes/post"
 import hireAdRouter from "./routes/hireAd"
+import adminRouter from "./routes/admin"
 
 dotenv.config()
 
@@ -18,8 +19,8 @@ const app = express()
 app.use(express.json())
 app.use(
   cors({
-    origin: "https://hiv-grid-fe.vercel.app",
-    // origin:"http://localhost:8080",
+    // origin: "https://hiv-grid-fe.vercel.app",
+    origin:"http://localhost:8080",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
   })
@@ -36,6 +37,7 @@ app.use("/api/HivGrid/home", homeRouter)
 app.use("/api/HivGrid/profile", profileRouter)
 app.use("/api/HivGrid/post", postRouter)
 app.use("/api/HivGrid/hire", hireAdRouter)
+app.use("/api/HivGrid/admin",adminRouter)
 
 
 mongoose

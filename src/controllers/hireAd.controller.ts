@@ -3,10 +3,35 @@ import { HiringAd } from "../models/hireAd.model";
 import { AuthRequest } from "../middleware/auth";
 import axios from "axios";
 
+export const deleteHireAd = async (req: Request, res: Response) => {
+  try {
+    const { postId } = req.body;
+
+    if (!postId) {
+      return res.status(400).json({ message: "Hire ad ID is required" });
+    }
+
+    const deletedAd = await HiringAd.findByIdAndDelete(postId);
+
+    if (!deletedAd) {
+      return res.status(404).json({ message: "Hire ad not found" });
+    }
+
+    return res.status(200).json({
+      message: "Hire ad deleted successfully",
+      deletedAd,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server error" });
+  }
+};
+
 export const publishHiringAd = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user.sub;
 
+    console.log("working")
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -53,6 +78,8 @@ export const publishHiringAd = async (req: AuthRequest, res: Response) => {
         .status(409)
         .json({ message: "You already have a published hiring ad" });
     }
+          console.log(error)
+
     return res.status(500).json({
       message: "Failed to publish hiring ad",
     });
@@ -208,7 +235,7 @@ export const enhanceDescription = async (req: Request, res: Response) => {
       {
         headers: {
           "Content-Type": "application/json",
-          "X-goog-api-key": "AIzaSyBl4tobnAdxLPOxen85FJbVBNMJYkVZE9M",
+          "X-goog-api-key": "AIzaSyDYvB2THOc72M50CjKglrusbXEcJIbEA5s",
         },
       }
     );

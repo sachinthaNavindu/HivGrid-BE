@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser,loginUser, forgetPassword, refreshToken,verify } from "../controllers/auth.controller";
+import { registerUser,loginUser, forgetPassword, refreshToken,verify,Registerverify } from "../controllers/auth.controller";
 import { registerValidation } from "../middleware/validators/auth.validator";
 import { validate } from "../middleware/validation";
 
@@ -15,5 +15,7 @@ authRouter.post("/resetPassword",forgetPassword)
 authRouter.post("/refreshToken",refreshToken)
 
 authRouter.post("/verify",verify)
+
+authRouter.post("/Registerverify",Registerverify)
 
 export default authRouter
